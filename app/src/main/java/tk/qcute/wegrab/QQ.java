@@ -73,6 +73,14 @@ public class QQ {
                         //hongbao message filter
                         int msgtype = (int) getObjectField(param.args[1], "msgtype");
                         if (msgtype == -2025) {
+                            /*
+                            msgUid = (long) getObjectField(param.args[1], "msgUid");
+                            istroop = (int) getObjectField(param.args[1], "istroop");
+                            senderuin = (String) getObjectField(param.args[1], "senderuin");
+                            frienduin = (String)getObjectField(param.args[1], "frienduin");
+                            selfuin = (String)getObjectField(param.args[1], "selfuin");
+                            */
+                            //XposedBridge.log("----------Message Handler");
                             msgList.add(new Tuple(
                                     (long) getObjectField(param.args[1], "msgUid"),
                                     (int) getObjectField(param.args[1], "istroop"),
@@ -127,6 +135,28 @@ public class QQ {
                 url.append("&authkey=" + authkey);
                 url.append("&agreement=0");
 
+                log("----------url-----" + url.toString());
+                /*
+                Class<?>gl = findClass("com.tencent.mobileqq.pluginsdk.PluginStatic", Param.classLoader);
+                findAndHookMethod(gl,
+                        "getOrCreateClassLoader",
+                        Context.class, String.class,
+                        new XC_MethodHook() {
+                            @Override
+                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                ClassLoader wl = (ClassLoader)param.getResult();
+                                Class<?>d =  findClass("com.tenpay.android.qqplugin.b.d", wl);
+                                findAndHookMethod(d, "a",String.class,new XC_MethodHook() {
+                                    @Override
+                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                        String arg = param.args[0].toString();
+                                        if(!arg.contains("mqq.tenpay.com"))return;
+                                        log(arg);
+                                    }
+                                });
+                            }
+                        });
+                */
                 //ramdom field
                 int random = msgCount % 16;
 
@@ -143,6 +173,7 @@ public class QQ {
                     reqText = callStaticMethod(pluginClass, "g", ApplicationContext) + url.toString();
                     reqText = des.getEncText(random, reqText);
                 }
+
                 //clear StringBuilder
                 url.delete(0, url.length());
                 url.append("https://mqq.tenpay.com/cgi-bin/hongbao/qpay_hb_na_grap.cgi?ver=2.0&chv=3");
@@ -151,9 +182,14 @@ public class QQ {
                 url.append("&skey_type=2");
                 url.append("&skey=" + skey);
                 url.append("&msgno=" + getMsgNo(selfuin));
-                //send request
+                //get it
                 Object d = newInstance(findClass("com.tenpay.android.qqplugin.b.d", walletClassLoader));
-                callMethod(d, "a", url.toString());
+                if(Version.isUpdateLibraryVersion)
+                    callMethod(d, "b", url.toString());
+                else callMethod(d, "a", url.toString());
+                log("----------url-----" + url.toString());
+                //log("time : "+String.valueOf(System.currentTimeMillis()));
+
             }
         });
 
@@ -163,6 +199,7 @@ public class QQ {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 ApplicationContext = ((Context) param.thisObject).getApplicationContext();
+                //log("----------Get Application Context");
             }
         });
         //get ticket manager
@@ -170,6 +207,7 @@ public class QQ {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 TicketManager = param.thisObject;
+                //log("----------Get Ticket Manager");
             }
         });
         //get hot chat manager
@@ -177,18 +215,21 @@ public class QQ {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 HotChatManager = param.thisObject;
+                //log("----------Get Hot Chat Manager");
             }
         });
         //get troop manager
         findAndHookConstructor("com.tencent.mobileqq.app.TroopManager", Param.classLoader, "com.tencent.mobileqq.app.QQAppInterface", new XC_MethodHook() {
             protected void afterHookedMethod(MethodHookParam methodHookParam) {
                 TroopManager = methodHookParam.thisObject;
+                //log("----------Get Troop Manager");
             }
         });
         //get friend manager
         findAndHookConstructor("com.tencent.mobileqq.app.FriendsManager", Param.classLoader, "com.tencent.mobileqq.app.QQAppInterface", new XC_MethodHook() {
             protected void afterHookedMethod(MethodHookParam methodHookParam) {
                 FriendManager = methodHookParam.thisObject;
+                //log("----------Get Friend Manager");
             }
         });
     }
@@ -215,17 +256,39 @@ public class QQ {
     private static String getGroupUin(int messageType, String senderUin, String friendUin) {
         switch (messageType){
             case 1:{
+                //Object troopManager = getType(TroopManager, "a", "com.tencent.mobileqq.data.TroopInfo", friendUin);
                 Object troopInfo = callMethod(TroopManager, "a", friendUin);
                 return (String)getObjectField(troopInfo,"troopcode");
             }
             case 5:{
+                //Object hotChatManager = getType(HotChatManager, "a", "com.tencent.mobileqq.data.HotChatInfo", friendUin);
                 Object hotChatInfo = callMethod(TroopManager, "a", friendUin);
                 return (String)getObjectField(hotChatInfo,"troopCode");
             }
             default:return senderUin;
         }
     }
+/*
+    private static Object getType(Object object, String methodName, String returnType, Object... args) throws InvocationTargetException, IllegalAccessException {
+        Class<?> clazz = object.getClass();
+        Class<?>[] params = getParameterTypes(args);
+        for (Method method : clazz.getDeclaredMethods()) {
 
+            if(!method.getReturnType().getName().equals(returnType))continue;
+            if(!method.getName().equals(methodName))continue;
+
+            Class[] parameterTypes = method.getParameterTypes();
+            if (params.length != parameterTypes.length) continue;
+
+            for (int i = 0; i < params.length; i++)
+                if (params[i] != parameterTypes[i]) break;
+
+            method.setAccessible(true);
+            return method.invoke(object, args);
+        }
+        throw new NoSuchMethodError();
+    }
+*/
     private static String getMsgNo(String msg) {
         String format = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         StringBuilder stringBuilder = new StringBuilder();

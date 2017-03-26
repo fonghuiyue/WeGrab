@@ -8,12 +8,12 @@ public class EncUtilBase {
     public EncUtilBase() {
         try {
             //Log.i("LoadLibrary","cftutils");
-            System.load("/data/data/tk.qcute.wegrab/lib/libcftutils_v1.2.3.so");
+            if(tk.qcute.wegrab.Version.isUpdateLibraryVersion)
+                System.load("/data/data/tk.qcute.wegrab/lib/libcftutils_v1.2.4.so");
+            else
+                System.load("/data/data/tk.qcute.wegrab/lib/libcftutils_v1.2.3.so");
         } catch (Throwable throwable) {
             throwable.printStackTrace();
-            try {
-                System.loadLibrary("cftutils_v1.2.3");
-            }catch (Throwable e){e.printStackTrace();}
         }
     }
 }

@@ -24,6 +24,11 @@ public class PreferencesUtils {
         return preferences;
     }
 
+
+    //public static boolean debug(){return getInstance().getBoolean("debug",false);}
+    //public static boolean open(){return getInstance().getBoolean("open",false);}
+    //public static boolean close(){return getInstance().getBoolean("close",false);}
+
     //wechat
     public static boolean wechatOpen() {return getInstance().getBoolean("wechat_open", false);}
 
@@ -37,6 +42,14 @@ public class PreferencesUtils {
     public static boolean qqWord() {return getInstance().getBoolean("qq_word", false);}
 
     public static boolean qqSelf() {return getInstance().getBoolean("qq_self", false);}
+
+    //public static boolean qqCompatible() {return getInstance().getBoolean("qq_compatible", false);}
+
+    //hide
+    //public static boolean newHide(){return getInstance().getBoolean("newHide",false);}
+
+    //public static boolean extremeHide(){return getInstance().getBoolean("extremeHide",false);}
+
 }
 
 

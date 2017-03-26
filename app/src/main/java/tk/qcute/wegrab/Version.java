@@ -32,10 +32,18 @@ public class Version {
     //WeChat
     //version
     private static String WeChatVersion = null;
-
+    /*
+    * the class must be has : com.tencent.mm.network.? object
+    * find in class : com.tencent.mm.model.ak$1
+    * localObject1 = ak.vy();
+    */
     public static String networkFunction = "vy";
     public static String networkClass = "com.tencent.mm.model.ak";
-
+    /*
+    * filed : messageClass
+    * find in package : com.tencent.mm.e.b
+    * find class by string : "msgId".hashCode();
+    * */
     public static String attachMessageClass = "com.tencent.mm.plugin.luckymoney.c.ae";
     public static String messageClass = "com.tencent.mm.e.b.by";
     public static String messageMethod = "b";
@@ -69,10 +77,17 @@ public class Version {
                 messageClass = "com.tencent.mm.e.b.by";
                 hasTimingIdentifier =true;
                 break;
-            default:
-                networkFunction = "vy";
-                networkClass = "com.tencent.mm.model.ak";
+            case "6.5.6":
+                networkFunction = "vM";
+                networkClass = "com.tencent.mm.model.al";
                 messageClass = "com.tencent.mm.e.b.by";
+                hasTimingIdentifier =true;
+                break;
+            default:
+                networkFunction = "vM";
+                networkClass = "com.tencent.mm.model.al";
+                messageClass = "com.tencent.mm.e.b.by";
+                hasTimingIdentifier =true;
         }
     }
 
@@ -82,7 +97,8 @@ public class Version {
             case "6.3.31":
             case "6.3.32":
             case "6.5.3":
-            case "6.5.4":return true;
+            case "6.5.4":
+            case "6.5.6":return true;
             default:return false;
         }
     }
@@ -91,7 +107,12 @@ public class Version {
     //QQ
     //version
     public static String QQVersion = null;
-
+    public  static boolean isUpdateLibraryVersion = false;
+    /*
+    * qwallet_plugin.apk
+    * package : com.tenpay.android.qqplugin.a
+    * find class contain :  DesDecUtil/Md5EncUtil
+    * */
     public static String WalletPluginClass = "com.tenpay.android.qqplugin.a.q";
 
     private static void setQQArgument(String version) {
@@ -102,7 +123,8 @@ public class Version {
             case "6.6.5":
             case "6.6.6":
             case "6.6.8":
-            case "6.6.9":
+            case "6.6.9":break;
+            case "6.7.0":isUpdateLibraryVersion=true;
             default : WalletPluginClass = "com.tenpay.android.qqplugin.a.q";
         }
     }
@@ -114,8 +136,10 @@ public class Version {
             case "6.6.2":
             case "6.6.5":
             case "6.6.6":
+            case "6.6.7":
             case "6.6.8":
-            case "6.6.9":return true;
+            case "6.6.9":
+            case "6.7.0":return true;
             default:return false;
         }
     }

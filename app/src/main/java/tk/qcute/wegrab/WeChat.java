@@ -61,7 +61,7 @@ public class WeChat {
                 Object ab=newInstance(
                         abClass, msgList.get(0).msgType, msgList.get(0).channelId,
                         msgList.get(0).sendId, msgList.get(0).nativeUrlString, "", "\u0020", msgList.get(0).talker,
-                        "v1.0",newTimingIdentifier);
+                        "v1.0", newTimingIdentifier);
                 //get it
                 callMethod(nClass, "a", ab, 0);
                 //remove bottom
@@ -81,6 +81,7 @@ public class WeChat {
                 if (field_status == 4) return;
                 //get talker type(is in chat room)
                 String field_talker = (String)getObjectField(param.thisObject, "field_talker");
+                //if (PreferencesUtils.wechatWhisper() && !isGroupTalk(talker)) return;
                 //get message type (is send by self)
                 int field_isSend = (int) getObjectField(param.thisObject, "field_isSend");
                 if (PreferencesUtils.wechatSelf() && field_isSend != 0) return;
@@ -105,6 +106,7 @@ public class WeChat {
 
                 String sendId = nativeUrl.getQueryParameter("sendid");
 
+                //XposedBridge.log("nativeUrlString: "+nativeUrlString);
                 nClass = callStaticMethod(findClass(Version.networkClass, Param.classLoader), Version.networkFunction);
                 abClass = findClass("com.tencent.mm.plugin.luckymoney.c.ab", Param.classLoader);
                 if(Version.hasTimingIdentifier){
@@ -115,6 +117,8 @@ public class WeChat {
                     Object ab=newInstance(abClass, msgType, channelId, sendId, nativeUrlString, "", "\u0020", field_talker, "v1.0");
                     callMethod(nClass, "a", ab, 0);
                 }
+                //call get lucky money function
+                //com.tencent.mm.u.n
             }
         });
     }
